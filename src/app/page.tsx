@@ -1,13 +1,15 @@
 'use client'
 
 import { useState } from 'react'
+import dynamic from 'next/dynamic'
 import Header from '@/src/components/Header'
 import NavTabs from '@/src/components/NavTabs'
-import ScheduleList from '@/src/components/ScheduleList'
-import VideoPreview from '@/src/components/VideoPreview'
-import ArtistsGrid from '@/src/components/ArtistsGrid'
-import LedWallPanel from '@/src/components/LedWallPanel'
-import AdminDashboard from '@/src/components/AdminDashboard'
+
+const ScheduleList = dynamic(() => import('@/src/components/ScheduleList'), { ssr: false })
+const VideoPreview = dynamic(() => import('@/src/components/VideoPreview'), { ssr: false })
+const ArtistsGrid = dynamic(() => import('@/src/components/ArtistsGrid'), { ssr: false })
+const LedWallPanel = dynamic(() => import('@/src/components/LedWallPanel'), { ssr: false })
+const AdminDashboard = dynamic(() => import('@/src/components/AdminDashboard'), { ssr: false })
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('schedule')
@@ -16,7 +18,7 @@ export default function Home() {
     <div className="min-h-screen bg-slate-900">
       <Header />
       <NavTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-      
+
       <div className="container mx-auto px-4 py-8">
         {activeTab === 'schedule' && <ScheduleList />}
         {activeTab === 'videos' && <VideoPreview />}
