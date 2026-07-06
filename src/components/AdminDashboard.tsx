@@ -6,6 +6,7 @@ import { Show, Artist } from '@/src/lib/types'
 import ScreenContentManager from '@/src/components/ScreenContentManager'
 import ProductionsPanel from '@/src/components/ProductionsPanel'
 import ShowGalleryManager from '@/src/components/ShowGalleryManager'
+import FeedbackViewer from '@/src/components/FeedbackViewer'
 import ArtistGalleryManager from '@/src/components/ArtistGalleryManager'
 
 const ADMIN_PASSWORD = '1234'
@@ -540,6 +541,7 @@ export default function AdminDashboard() {
       <ArtistGalleryManager artists={artists} />
       <PrintSection />
       <ArtistLinkSection artists={artists} />
+      <FeedbackViewer />
       <ScreenContentManager />
     </div>
   )
