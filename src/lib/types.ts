@@ -33,10 +33,18 @@ export type ArtistPhoto = {
 export type Feedback = {
   id: string
   show_id: string | null
-  rating_show: number
-  rating_venue_access: number
-  would_recommend: boolean
-  review: string
+  rating_overall: number
+  rating_content: number
+  rating_acting: number
+  rating_staging: number
+  rating_audio: number
+  duration_feedback: 'troppo-breve' | 'giusta' | 'troppo-lungo' | null
+  rating_value: number | null
+  rating_comfort: number | null
+  recommend: 'si' | 'forse' | 'no' | null
+  positive_aspects: string[]
+  improvements: string | null
+  email: string | null
   created_at: string
 }
 
