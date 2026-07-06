@@ -1,37 +1,37 @@
 # Showtime ERP
 
-Gestionale smart per teatri e sale spettacolo: palinsesto, schede artisti, digital signage TV foyer, LED wall e dashboard produzioni in un'unica piattaforma.
+Smart management platform for theatres and performance venues: show scheduling, artist profiles, foyer digital signage, LED wall, and production dashboard in one place.
 
-## Stack tecnico
+## Tech stack
 
 - **Frontend**: Next.js 16 (App Router, Turbopack), React, Tailwind CSS
-- **Backend**: Supabase (Postgres + Storage), accesso diretto via client SDK
-- **Hosting**: Netlify (deploy automatico da Git)
+- **Backend**: Supabase (Postgres + Storage), direct client SDK access
+- **Hosting**: Netlify (automatic deploy from Git)
 
-## Funzionalità principali
+## Main features
 
-- **Palinsesto spettacoli** — elenco pubblico con scheda dettaglio e galleria foto a slide
-- **Schede artisti** — filtri per ruolo, foto (adatta/originale), galleria foto multipla
-- **Digital Signage TV Foyer** — gestione contenuti per schermi (1-4), formato 16:9/9:16
-- **LED Wall** — testo scorrevole configurabile
-- **Admin** — pannello gestione completo (spettacoli, artisti, contenuti stampa, foyer)
-- **Admin Artistico** (`/admin/artistico`) — dashboard a reparti con sidebar (Pianificazione, Personale, Cast, Digital Signage, Biglietteria, Amministrazione)
-- **Landing page** (`/welcome`) — pagina di presentazione del prodotto
+- **Show schedule** — public listing with detail view and photo slideshow gallery
+- **Artist profiles** — filter by role, photo fit (contain/cover), multi-photo gallery
+- **Foyer TV Digital Signage** — content management for screens (1-4), 16:9/9:16 format
+- **LED Wall** — configurable scrolling text
+- **Admin** — full management panel (shows, artists, print content, foyer)
+- **Artistic Admin** (`/admin/artistico`) — department-based dashboard with sidebar (Planning, Staff, Cast, Digital Signage, Ticketing, Administration)
+- **Landing page** (`/welcome`) — product presentation page
 
-## Avvio in locale
+## Local setup
 
 ```bash
 npm install
 npm run dev
 ```
 
-Apri [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000).
 
-Vedi [doc/avvio-locale.html](doc/avvio-locale.html) per la guida completa.
+See [doc/avvio-locale.html](doc/avvio-locale.html) (Italian) for the full guide.
 
-## Configurazione
+## Configuration
 
-Crea `.env.local` con le variabili Supabase:
+Create `.env.local` with Supabase variables:
 
 ```
 NEXT_PUBLIC_SUPABASE_URL=...
@@ -39,29 +39,29 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 SUPABASE_SECRET_KEY=...
 ```
 
-## Struttura pagine
+## Page structure
 
-| Route | Descrizione |
+| Route | Description |
 |---|---|
-| `/` | Home pubblica (tab Artisti / Palinsesto / Admin) |
-| `/artists` | Pagina schede artisti |
-| `/schedule` | Pagina palinsesto |
-| `/tv` | Vista fullscreen per schermi foyer (`?screen=1-4`) |
-| `/admin` | Pannello amministrazione completo |
-| `/admin/artistico` | Dashboard a reparti con sidebar |
-| `/welcome` | Landing page marketing prodotto |
+| `/` | Public home (Artists / Schedule / Admin tabs) |
+| `/artists` | Artist profiles page |
+| `/schedule` | Show schedule page |
+| `/tv` | Fullscreen foyer screen view (`?screen=1-4`) |
+| `/admin` | Full admin panel |
+| `/admin/artistico` | Department dashboard with sidebar |
+| `/welcome` | Product marketing landing page |
 
-## Documentazione
+## Documentation
 
-Tutta la documentazione di progetto (setup TV fisiche, piano ERP, changelog, script SQL) è in [doc/](doc/):
+Project documentation (TV setup, ERP plan, changelog, SQL scripts) is in [doc/](doc/), written in Italian (product's target market):
 
-- [avvio-locale.html](doc/avvio-locale.html) — come avviare in locale
-- [setup-tv.html](doc/setup-tv.html) — setup fisico schermi foyer (Raspberry Pi / Fire TV Stick)
-- [piano-erp-teatro.html](doc/piano-erp-teatro.html) — roadmap tecnica dettagliata a fasi
-- [roadmap-showtime-erp.html](doc/roadmap-showtime-erp.html) — roadmap di prodotto (target, modello commerciale, versioni)
-- [changelog.html](doc/changelog.html) — storico modifiche
-- [sql-nuove-colonne.sql](doc/sql-nuove-colonne.sql), [sql-artist-photos.sql](doc/sql-artist-photos.sql) — migrazioni Supabase applicate
+- [avvio-locale.html](doc/avvio-locale.html) — local setup guide
+- [setup-tv.html](doc/setup-tv.html) — foyer screen physical setup (Raspberry Pi / Fire TV Stick)
+- [piano-erp-teatro.html](doc/piano-erp-teatro.html) — detailed technical roadmap by phase
+- [roadmap-showtime-erp.html](doc/roadmap-showtime-erp.html) — product roadmap (target audience, business model, versions)
+- [changelog.html](doc/changelog.html) — change history
+- [sql-nuove-colonne.sql](doc/sql-nuove-colonne.sql), [sql-artist-photos.sql](doc/sql-artist-photos.sql) — applied Supabase migrations
 
 ## Deploy
 
-Il progetto è collegato a Netlify con deploy automatico su push al branch principale. Build command: `npm run build`.
+The project is connected to Netlify with automatic deploy on push to the main branch. Build command: `npm run build`.
