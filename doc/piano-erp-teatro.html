@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Piano ERP Teatro - Roadmap</title>
+<style>
+body{font-family:sans-serif;max-width:800px;margin:40px auto;line-height:1.6;padding:0 20px}
+code{background:#f4f4f4;padding:2px 6px;border-radius:4px}
+h1{border-bottom:2px solid #333;padding-bottom:8px}
+h2{margin-top:32px;color:#333;border-left:4px solid #d63384;padding-left:10px}
+h3{margin-top:20px}
+.note{background:#fff3cd;padding:12px;border-left:4px solid #ffc107;margin:16px 0}
+.fase{background:#e7f3ff;padding:16px;border-radius:8px;margin:16px 0}
+table{border-collapse:collapse;width:100%;margin:12px 0}
+th,td{border:1px solid #ccc;padding:8px;text-align:left;font-size:14px}
+th{background:#f0f0f0}
+</style>
+</head>
+<body>
+<h1>Roadmap ERP Teatro Italia Show Lab</h1>
+
+<div class="note">
+<strong>Stato attuale:</strong> app semplice con palinsesto spettacoli, artisti, LED wall/TV signage, admin base (password unica, no ruoli).<br>
+<strong>Obiettivo:</strong> evolvere verso gestionale completo tipo "Opera ERP" con accessi per ruolo (direttore artistico, proprietario, tecnico, grafico), calendario produzioni, cast/contratti, logistica, budget, biglietteria.
+</div>
+
+<div class="note">
+<strong>Nota importante:</strong> questo è un progetto grande, da costruire a fasi. Non si scrive tutto insieme — ogni fase è testabile e utilizzabile prima di passare alla successiva.
+</div>
+
+<h2>Fase 0 — Accessi per ruolo (fondamenta)</h2>
+<div class="fase">
+<p>Prima di tutto: sistema di login vero con ruoli, altrimenti ogni modulo dopo va rifatto.</p>
+<ul>
+<li>Sostituire password unica hardcoded con autenticazione reale (Supabase Auth)</li>
+<li>4 ruoli: <strong>Proprietario</strong> (accesso completo), <strong>Direttore artistico</strong> (palinsesto, cast, contenuti), <strong>Tecnico</strong> (logistica, materiali, TV/schermi), <strong>Grafico</strong> (LED wall, contenuti visivi, video)</li>
+<li>Tabella <code>users</code> / <code>profiles</code> con campo <code>role</code>, RLS Supabase per limitare accesso ai dati per ruolo</li>
+<li>Dashboard admin che mostra solo le sezioni pertinenti al ruolo loggato</li>
+<li>Sezione TV/Foyer (ScreenContentManager attuale, già valida) visibile solo a ruoli che gestiscono immagini (grafico/tecnico) — non a tutti</li>
+<li>Editing contenuti in stile CMS (tipo Sanity): interfaccia ricca invece di form grezzi, per tutte le sezioni admin (palinsesto, artisti, produzioni)</li>
+</ul>
+</div>
+
+<h2>Fase 1 — Programmazione e calendario spettacoli</h2>
+<div class="fase">
+<p>Evoluzione del "Palinsesto" attuale in calendario vero e proprio.</p>
+<ul>
+<li>Vista calendario (mensile/settimanale) invece di lista semplice</li>
+<li>Produzioni, prove, repliche, tournée come tipi di evento distinti</li>
+<li>Assegnazione sale, orari, cast, risorse tecniche per evento</li>
+<li>Filtri per compagnia, sala, categoria, periodo</li>
+<li>Rilevamento sovrapposizioni/conflitti (stessa sala, stesso orario)</li>
+</ul>
+<p><strong>Tabelle nuove:</strong> <code>venues</code> (sale), <code>events</code> (produzioni/prove/repliche con tipo), <code>event_assignments</code> (cast/risorse per evento)</p>
+</div>
+
+<h2>Fase 2 — Cast, troupe e contratti</h2>
+<div class="fase">
+<ul>
+<li>Anagrafiche artistiche/tecniche estese (oltre a "Artisti" attuale)</li>
+<li>Disponibilità e assegnazioni a eventi/produzioni</li>
+<li>Generazione e archiviazione contratti (template + PDF)</li>
+<li>Gestione compensi, scadenze, note legali</li>
+<li>Profilo per ogni persona con storico operativo/contrattuale</li>
+</ul>
+<p><strong>Tabelle nuove:</strong> <code>people</code> (estende artists), <code>availability</code>, <code>contracts</code>, <code>payments</code></p>
+</div>
+
+<h2>Fase 3 — Coordinamento tecnico-logistico e spazi</h2>
+<div class="fase">
+<ul>
+<li>Prenotazione sale/spazi (palcoscenico, prove, camerini, laboratori)</li>
+<li>Gestione materiali di scena, luci, audio, video (questo è dove si collega bene la parte TV/LED wall già esistente)</li>
+<li>Task coordinati assegnabili per ruolo/reparto (es. tecnico: "monta luci sala 2 entro venerdì")</li>
+<li>Tracciamento consegne, montaggi, allestimenti</li>
+</ul>
+<p><strong>Tabelle nuove:</strong> <code>bookings</code> (prenotazioni spazi), <code>tasks</code>, <code>equipment</code></p>
+</div>
+
+<h2>Fase 4 — Budget, costi e rendicontazione</h2>
+<div class="fase">
+<ul>
+<li>Budget per singola produzione</li>
+<li>Monitoraggio spese vive/costi fissi in tempo reale</li>
+<li>Compensi, spese tecniche, ospitalità, trasporti in un unico posto</li>
+<li>Report per controllo di gestione e rendicontazioni esterne (utile per bandi/coproduzioni)</li>
+</ul>
+<p><strong>Tabelle nuove:</strong> <code>budgets</code>, <code>expenses</code>, <code>reports</code> (o viste aggregate)</p>
+</div>
+
+<h2>Fase 5 — Integrazione biglietteria e pubblico</h2>
+<div class="fase">
+<p>Fase più complessa: richiede o costruire modulo biglietteria/CRM da zero, o integrare servizio esterno (es. Vivaticket, TicketOne API, o soluzione custom).</p>
+<ul>
+<li>Performance commerciale/partecipativa per produzione</li>
+<li>Collegamento pianificazione ↔ vendita ↔ dati pubblico</li>
+<li>Incrocio dati produzione con gradimento/recensioni/ritorno economico</li>
+</ul>
+<div class="note">Da decidere: costruire biglietteria interna o integrare piattaforma esterna via API. Impatta molto tempi e costi.</div>
+</div>
+
+<h2>Ordine consigliato</h2>
+<table>
+<tr><th>Fase</th><th>Perché prima/dopo</th></tr>
+<tr><td>0. Ruoli/accessi</td><td>Serve subito, altrimenti si rifà lavoro dopo</td></tr>
+<tr><td>1. Calendario</td><td>Cuore del sistema, base per tutto il resto</td></tr>
+<tr><td>2. Cast/contratti</td><td>Si appoggia al calendario (fase 1)</td></tr>
+<tr><td>3. Logistica/spazi</td><td>Si appoggia al calendario, riusa parte TV/LED già fatta</td></tr>
+<tr><td>4. Budget</td><td>Riusa dati di cast (fase 2) e produzioni (fase 1)</td></tr>
+<tr><td>5. Biglietteria</td><td>Ultima, richiede decisione su build vs integrazione esterna</td></tr>
+</table>
+
+<h2>Prossimo passo</h2>
+<p>Rivedere questo documento, confermare priorità (es. si parte da Fase 0 + 1?), poi si pianifica in dettaglio la prima fase prima di scrivere codice.</p>
+
+</body>
+</html>

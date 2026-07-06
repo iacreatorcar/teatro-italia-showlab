@@ -5,10 +5,8 @@ interface NavTabsProps {
 
 export default function NavTabs({ activeTab, setActiveTab }: NavTabsProps) {
   const tabs = [
-    { id: 'schedule', label: '📅 Scaletta' },
-    { id: 'videos', label: '🎥 Video' },
     { id: 'artists', label: '👤 Artisti' },
-    { id: 'ledwall', label: '📺 LED Wall' },
+    { id: 'schedule', label: '📅 Palinsesto' },
     { id: 'admin', label: '⚙️ Admin' }
   ]
 

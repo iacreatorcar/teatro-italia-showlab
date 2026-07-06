@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Showtime ERP — Roadmap</title>
+<style>
+body{font-family:sans-serif;max-width:900px;margin:40px auto;line-height:1.6;padding:0 20px;color:#1a1a2e}
+code{background:#f4f4f4;padding:2px 6px;border-radius:4px}
+h1{border-bottom:2px solid #1a1a2e;padding-bottom:8px}
+h2{margin-top:36px;color:#1a1a2e;border-left:4px solid #d4af37;padding-left:12px}
+h3{margin-top:20px}
+table{border-collapse:collapse;width:100%;margin:16px 0}
+th,td{border:1px solid #ccc;padding:10px;text-align:left;font-size:14px;vertical-align:top}
+th{background:#f5f5f5}
+.badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:bold}
+.badge-now{background:#d4edda;color:#155724}
+.badge-next{background:#fff3cd;color:#856404}
+.badge-later{background:#e2e3e5;color:#383d41}
+.hero{background:linear-gradient(135deg,#1a1a2e,#16213e);color:#d4af37;padding:24px;border-radius:8px;margin-bottom:24px}
+.hero p{color:#ccc;margin-top:6px}
+</style>
+</head>
+<body>
+
+<div class="hero">
+<h1 style="border:none;color:#d4af37;margin:0">🎭 Showtime ERP</h1>
+<p>Roadmap di prodotto — gestionale smart per teatri e sale spettacolo</p>
+</div>
+
+<h2>A chi è rivolto</h2>
+<table>
+<tr><th>Segmento</th><th>Esigenza principale</th></tr>
+<tr><td>Teatri indipendenti / piccole-medie sale</td><td>Sostituire fogli Excel e WhatsApp per gestire palinsesto, cast, contenuti TV/LED foyer</td></tr>
+<tr><td>Compagnie teatrali con sede fissa</td><td>Coordinare produzioni, cast, prove, materiali tecnici in un unico posto</td></tr>
+<tr><td>Circuiti/reti di sale (multi-location)</td><td>Gestire più teatri con ruoli separati (proprietario, direttore artistico, tecnico, grafico) da un'unica piattaforma</td></tr>
+<tr><td>Teatri storici/istituzionali</td><td>Digital signage per foyer (TV, LED wall) sincronizzato con palinsesto reale</td></tr>
+</table>
+
+<h2>Come può essere implementato</h2>
+<h3>Modello 1 — White-label a brand teatro (consigliato per singolo cliente)</h3>
+<ul>
+<li>Fork/clone del progetto per ogni teatro cliente</li>
+<li>Personalizzazione: nome, logo, colori, dominio proprio (es. <code>gestione.teatroitalia.it</code>)</li>
+<li>Hosting dedicato (Netlify/Vercel) + progetto Supabase dedicato per isolamento dati</li>
+<li>Vantaggio: massima personalizzazione, il cliente "sente" il software come proprio</li>
+<li>Svantaggio: ogni aggiornamento va propagato manualmente su ogni fork, se non si automatizza</li>
+</ul>
+
+<h3>Modello 2 — Licenza SaaS multi-tenant (scalabile, più lavoro iniziale)</h3>
+<ul>
+<li>Un'unica installazione, più teatri come "tenant" separati (riga <code>theatre_id</code> su ogni tabella)</li>
+<li>Login con ruoli per tenant, dati isolati via RLS Supabase</li>
+<li>Abbonamento mensile/annuale per teatro, un solo codice da mantenere</li>
+<li>Vantaggio: un aggiornamento serve tutti i clienti insieme, scala meglio nel tempo</li>
+<li>Svantaggio: richiede refactoring per multi-tenancy (non banale, va pianificato da subito se si sceglie questa strada)</li>
+</ul>
+
+<h3>Raccomandazione</h3>
+<p>Partire con <strong>Modello 1</strong> per i primi 1-3 clienti pilota (validazione mercato, feedback reale), poi valutare migrazione a <strong>Modello 2</strong> quando si superano 4-5 teatri attivi e la manutenzione multi-fork diventa insostenibile.</p>
+
+<h2>Scheda tecnica</h2>
+<table>
+<tr><th>Componente</th><th>Dettaglio</th></tr>
+<tr><td>Frontend</td><td>Next.js 16 (App Router, Turbopack), React, Tailwind CSS</td></tr>
+<tr><td>Backend / Database</td><td>Supabase (Postgres + Auth + Storage), accesso via client SDK</td></tr>
+<tr><td>Hosting</td><td>Netlify (deploy automatico da Git), compatibile anche Vercel</td></tr>
+<tr><td>Autenticazione</td><td>Attuale: password singola admin (da sostituire con Supabase Auth + ruoli in Fase 0 roadmap tecnica)</td></tr>
+<tr><td>Moduli attivi</td><td>Palinsesto spettacoli, Schede artisti (con galleria foto), Digital Signage TV Foyer, LED Wall, Dashboard Produzioni/Cast/Budget (demo)</td></tr>
+<tr><td>Moduli pianificati</td><td>Ruoli/accessi multi-utente, calendario avanzato con conflitti, contratti cast, budget reale, integrazione biglietteria</td></tr>
+<tr><td>Requisiti hardware foyer</td><td>1 dispositivo per schermo (Raspberry Pi consigliato per uso continuativo, o Fire TV Stick/Chromecast per uso saltuario) in kiosk mode su browser</td></tr>
+</table>
+
+<h2>Versioni pianificate</h2>
+
+<table>
+<tr><th>Versione</th><th>Contenuto</th><th>Stato</th></tr>
+<tr><td><strong>v1.0 — MVP attuale</strong></td><td>Palinsesto, Artisti, Digital Signage TV, LED Wall, Admin base (password singola)</td><td><span class="badge badge-now">Live</span></td></tr>
+<tr><td><strong>v1.1</strong></td><td>Autenticazione reale con ruoli (proprietario, direttore artistico, tecnico, grafico), permessi per sezione</td><td><span class="badge badge-next">Prossima</span></td></tr>
+<tr><td><strong>v1.2</strong></td><td>Calendario spettacoli avanzato (vista mensile/settimanale reale, rilevamento conflitti sale/cast)</td><td><span class="badge badge-next">Prossima</span></td></tr>
+<tr><td><strong>v1.3</strong></td><td>Cast e contratti: anagrafiche estese, disponibilità, generazione contratti PDF, compensi</td><td><span class="badge badge-later">Successiva</span></td></tr>
+<tr><td><strong>v1.4</strong></td><td>Logistica: prenotazione sale/spazi, materiali di scena, task per reparto</td><td><span class="badge badge-later">Successiva</span></td></tr>
+<tr><td><strong>v1.5</strong></td><td>Budget e rendicontazione reale (non più demo), report per bandi/coproduzioni</td><td><span class="badge badge-later">Successiva</span></td></tr>
+<tr><td><strong>v2.0</strong></td><td>Integrazione biglietteria/CRM pubblico, analisi vendite-produzione, eventuale multi-tenancy per licenza SaaS</td><td><span class="badge badge-later">Futura</span></td></tr>
+</table>
+
+<h2>Brand: teatro dedicato o solo licenza</h2>
+<table>
+<tr><th></th><th>Brand teatro (white-label)</th><th>Solo licenza (Showtime ERP)</th></tr>
+<tr><td>Nome/logo visibile</td><td>Nome del teatro cliente</td><td>"Showtime ERP" con nome teatro come sotto-etichetta, o nascosto del tutto (a seconda contratto)</td></tr>
+<tr><td>Dominio</td><td>Dominio del cliente</td><td>Sottodominio Showtime (es. <code>teatroitalia.showtime-erp.app</code>) o dominio cliente comunque</td></tr>
+<tr><td>Modello commerciale</td><td>Progetto una tantum + manutenzione, o canone annuo</td><td>Abbonamento ricorrente (mensile/annuale) tipo SaaS</td></tr>
+<tr><td>Aggiornamenti</td><td>A richiesta / pacchetto manutenzione</td><td>Inclusi nell'abbonamento, automatici per tutti</td></tr>
+<tr><td>Adatto a</td><td>Cliente singolo con budget dedicato, vuole "il suo software"</td><td>Prodotto scalabile a molti teatri, business ricorrente</td></tr>
+</table>
+
+<h2>Prossimo passo consigliato</h2>
+<p>Confermare con primo cliente pilota (es. Teatro Italia) se preferisce modello white-label dedicato o è disponibile a testare come primo tenant di una futura versione SaaS. Questo determina se investire subito nel refactoring multi-tenant o procedere fork-per-cliente.</p>
+
+</body>
+</html>

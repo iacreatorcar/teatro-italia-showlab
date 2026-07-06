@@ -12,7 +12,22 @@ export type Artist = {
   role: string
   bio: string
   photo_url?: string
+  photo_fit: 'contain' | 'cover'
   show_id: string
+}
+
+export type ShowPhoto = {
+  id: string
+  show_id: string
+  url: string
+  sort_order: number
+}
+
+export type ArtistPhoto = {
+  id: string
+  artist_id: string
+  url: string
+  sort_order: number
 }
 
 export type Video = {

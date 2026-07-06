@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Changelog - Teatro Italia Show Lab</title>
+<style>
+body{font-family:sans-serif;max-width:800px;margin:40px auto;line-height:1.6;padding:0 20px}
+code{background:#f4f4f4;padding:2px 6px;border-radius:4px}
+h1{border-bottom:2px solid #333;padding-bottom:8px}
+h2{margin-top:32px;color:#333;border-left:4px solid #d63384;padding-left:10px}
+ul{margin-top:8px}
+.date{color:#888;font-size:13px}
+</style>
+</head>
+<body>
+<h1>Changelog modifiche</h1>
+<p class="date">Ultimo aggiornamento: 2026-07-05</p>
+
+<h2>Deploy</h2>
+<ul>
+<li>Sito pubblicato su Netlify (invece di Vercel), auto-rilevato come progetto Next.js</li>
+<li>Variabili ambiente Supabase configurate: <code>NEXT_PUBLIC_SUPABASE_URL</code>, <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code>, <code>SUPABASE_SECRET_KEY</code></li>
+</ul>
+
+<h2>Navigazione / Contenuti pubblici</h2>
+<ul>
+<li>Tab e titolo "Scaletta" rinominati in "Palinsesto"</li>
+<li>Rimossa sezione "Video" (era mock non funzionante, non collegata a Supabase): tolta dal menu, rimossa route <code>/videos</code> e componente <code>VideoPreview</code></li>
+</ul>
+
+<h2>Sezione Artisti (<code>/artists</code>)</h2>
+<ul>
+<li>Nuovo design: header dedicato, filtri dinamici per ruolo, card con foto/bio, modal dettaglio</li>
+<li>Aggiunto campo <strong>URL Foto</strong> nel form Admin "Aggiungi Artista"</li>
+<li>Aggiunta scelta <strong>Adatta</strong> (mostra tutta l'immagine) / <strong>Originale</strong> (riempie e ritaglia) per la foto principale — colonna <code>photo_fit</code> in Supabase</li>
+<li>Aggiunta <strong>galleria foto multiple</strong> per artista: nuova tabella <code>artist_photos</code>, sezione Admin "Galleria Foto Artista", modal pubblico con slide (frecce + puntini) se più foto presenti</li>
+</ul>
+
+<h2>Sezione Palinsesto (<code>/schedule</code>)</h2>
+<ul>
+<li>Click su uno spettacolo apre scheda/modal con titolo, data, descrizione</li>
+<li>Aggiunta <strong>galleria foto multiple</strong> per spettacolo: nuova tabella <code>show_photos</code>, sezione Admin "Galleria Foto Spettacolo", slide con frecce + puntini nella scheda pubblica</li>
+<li>Aggiunto pulsante <strong>Modifica</strong> nella tabella Admin Spettacoli (prima solo Elimina) — precompila form sopra, aggiorna invece di creare un duplicato</li>
+</ul>
+
+<h2>Admin — struttura</h2>
+<ul>
+<li>Nuovo pannello <strong>Produzioni</strong> (dati dimostrativi: calendario, cast, budget, produzioni in corso) — stile mockup oro/scuro, in attesa di collegamento a dati reali</li>
+<li>Nuova pagina <strong>/admin/artistico</strong>: dashboard con sidebar a reparti (Pianificazione Operativa/Artistica, Personale, Cast, Materiali, Digital Signage, LED Wall, Archivi, Biglietteria, Amministrazione) — dati dimostrativi salvo Digital Signage e LED Wall che sono reali/funzionanti</li>
+<li>Sezione "Digital Signage" in <code>/admin/artistico</code> collegata al vero pannello Foyer TV (stesso di Admin principale)</li>
+<li>Sezione "LED Wall" in <code>/admin/artistico</code> collegata al vero pannello LED Wall</li>
+</ul>
+
+<h2>Bug fix</h2>
+<ul>
+<li>Risolto invio doppio dei form "Aggiungi Spettacolo" e "Aggiungi Artista" (poteva creare righe duplicate con doppio click) — pulsanti ora si disabilitano durante il salvataggio</li>
+</ul>
+
+<h2>Database Supabase — modifiche schema</h2>
+<ul>
+<li><code>artists</code>: aggiunta colonna <code>photo_fit</code> (contain/cover)</li>
+<li>Nuova tabella <code>show_photos</code> (galleria foto spettacoli)</li>
+<li>Nuova tabella <code>artist_photos</code> (galleria foto artisti)</li>
+</ul>
+
+<h2>Pianificazione futura</h2>
+<ul>
+<li>Vedi <a href="piano-erp-teatro.html">piano-erp-teatro.html</a> per roadmap completa (ruoli/accessi, calendario reale, cast/contratti, logistica, budget, biglietteria)</li>
+<li>Vedi <a href="setup-tv.html">setup-tv.html</a> per setup fisico TV (Raspberry Pi / Fire TV Stick)</li>
+</ul>
+
+</body>
+</html>

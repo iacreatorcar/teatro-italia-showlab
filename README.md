@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Showtime ERP
 
-## Getting Started
+Gestionale smart per teatri e sale spettacolo: palinsesto, schede artisti, digital signage TV foyer, LED wall e dashboard produzioni in un'unica piattaforma.
 
-First, run the development server:
+## Stack tecnico
+
+- **Frontend**: Next.js 16 (App Router, Turbopack), React, Tailwind CSS
+- **Backend**: Supabase (Postgres + Storage), accesso diretto via client SDK
+- **Hosting**: Netlify (deploy automatico da Git)
+
+## Funzionalità principali
+
+- **Palinsesto spettacoli** — elenco pubblico con scheda dettaglio e galleria foto a slide
+- **Schede artisti** — filtri per ruolo, foto (adatta/originale), galleria foto multipla
+- **Digital Signage TV Foyer** — gestione contenuti per schermi (1-4), formato 16:9/9:16
+- **LED Wall** — testo scorrevole configurabile
+- **Admin** — pannello gestione completo (spettacoli, artisti, contenuti stampa, foyer)
+- **Admin Artistico** (`/admin/artistico`) — dashboard a reparti con sidebar (Pianificazione, Personale, Cast, Digital Signage, Biglietteria, Amministrazione)
+- **Landing page** (`/welcome`) — pagina di presentazione del prodotto
+
+## Avvio in locale
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Apri [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Vedi [doc/avvio-locale.html](doc/avvio-locale.html) per la guida completa.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Configurazione
 
-## Learn More
+Crea `.env.local` con le variabili Supabase:
 
-To learn more about Next.js, take a look at the following resources:
+```
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+SUPABASE_SECRET_KEY=...
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Struttura pagine
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Route | Descrizione |
+|---|---|
+| `/` | Home pubblica (tab Artisti / Palinsesto / Admin) |
+| `/artists` | Pagina schede artisti |
+| `/schedule` | Pagina palinsesto |
+| `/tv` | Vista fullscreen per schermi foyer (`?screen=1-4`) |
+| `/admin` | Pannello amministrazione completo |
+| `/admin/artistico` | Dashboard a reparti con sidebar |
+| `/welcome` | Landing page marketing prodotto |
 
-## Deploy on Vercel
+## Documentazione
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Tutta la documentazione di progetto (setup TV fisiche, piano ERP, changelog, script SQL) è in [doc/](doc/):
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [avvio-locale.html](doc/avvio-locale.html) — come avviare in locale
+- [setup-tv.html](doc/setup-tv.html) — setup fisico schermi foyer (Raspberry Pi / Fire TV Stick)
+- [piano-erp-teatro.html](doc/piano-erp-teatro.html) — roadmap tecnica dettagliata a fasi
+- [roadmap-showtime-erp.html](doc/roadmap-showtime-erp.html) — roadmap di prodotto (target, modello commerciale, versioni)
+- [changelog.html](doc/changelog.html) — storico modifiche
+- [sql-nuove-colonne.sql](doc/sql-nuove-colonne.sql), [sql-artist-photos.sql](doc/sql-artist-photos.sql) — migrazioni Supabase applicate
+
+## Deploy
+
+Il progetto è collegato a Netlify con deploy automatico su push al branch principale. Build command: `npm run build`.

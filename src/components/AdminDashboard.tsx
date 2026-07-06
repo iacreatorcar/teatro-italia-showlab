@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react'
 import { supabase } from '@/src/lib/supabase'
 import { Show, Artist } from '@/src/lib/types'
 import ScreenContentManager from '@/src/components/ScreenContentManager'
+import ProductionsPanel from '@/src/components/ProductionsPanel'
+import ShowGalleryManager from '@/src/components/ShowGalleryManager'
+import ArtistGalleryManager from '@/src/components/ArtistGalleryManager'
 
 const ADMIN_PASSWORD = '1234'
 
@@ -25,8 +28,8 @@ function SuccessMsg({ show }: { show: boolean }) {
   return <div className="mb-4 bg-green-600 text-white p-3 rounded">✓ Salvato!</div>
 }
 
-function InputField({ name, placeholder, required, type = 'text' }: {
-  name: string; placeholder: string; required?: boolean; type?: string
+function InputField({ name, placeholder, required, type = 'text', defaultValue }: {
+  name: string; placeholder: string; required?: boolean; type?: string; defaultValue?: string
 }) {
   return (
     <input
@@ -34,16 +37,18 @@ function InputField({ name, placeholder, required, type = 'text' }: {
       name={name}
       placeholder={placeholder}
       required={required}
+      defaultValue={defaultValue}
       className="w-full bg-slate-700 text-white px-4 py-2 rounded border border-pink-600 focus:outline-none focus:border-pink-400"
     />
   )
 }
 
-function TextAreaField({ name, placeholder }: { name: string; placeholder: string }) {
+function TextAreaField({ name, placeholder, defaultValue }: { name: string; placeholder: string; defaultValue?: string }) {
   return (
     <textarea
       name={name}
       placeholder={placeholder}
+      defaultValue={defaultValue}
       className="w-full bg-slate-700 text-white px-4 py-2 rounded border border-pink-600 h-20 focus:outline-none focus:border-pink-400"
     />
   )
@@ -238,6 +243,9 @@ export default function AdminDashboard() {
   const [shows, setShows] = useState<Show[]>([])
   const [artists, setArtists] = useState<Artist[]>([])
   const [showMsg, setShowMsg] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [editingShowId, setEditingShowId] = useState<string | null>(null)
+  const [editingArtistId, setEditingArtistId] = useState<string | null>(null)
 
   async function handleLogin() {
     if (password === ADMIN_PASSWORD) {
@@ -257,30 +265,67 @@ export default function AdminDashboard() {
 
   async function addShow(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault()
-    const fd = new FormData(e.currentTarget)
-    await supabase.from('shows').insert({
+    if (submitting) return
+    setSubmitting(true)
+    const form = e.currentTarget
+    const fd = new FormData(form)
+    const payload = {
       title: fd.get('title'),
       date: fd.get('date'),
       description: fd.get('description'),
-    })
+    }
+    if (editingShowId) {
+      await supabase.from('shows').update(payload).eq('id', editingShowId)
+      setEditingShowId(null)
+    } else {
+      await supabase.from('shows').insert(payload)
+    }
     setShowMsg(true)
     setTimeout(() => setShowMsg(false), 2000)
     fetchData()
-    e.currentTarget.reset()
+    form.reset()
+    setSubmitting(false)
+  }
+
+  function startEditShow(show: Show) {
+    setEditingShowId(show.id)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  function cancelEditShow() {
+    setEditingShowId(null)
+  }
+
+  function toDatetimeLocal(dateStr: string) {
+    const d = new Date(dateStr)
+    const pad = (n: number) => String(n).padStart(2, '0')
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
   }
 
   async function addArtist(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault()
-    const fd = new FormData(e.currentTarget)
-    await supabase.from('artists').insert({
+    if (submitting) return
+    setSubmitting(true)
+    const form = e.currentTarget
+    const fd = new FormData(form)
+    const payload = {
       name: fd.get('name'),
       role: fd.get('role'),
       bio: fd.get('bio'),
-    })
+      photo_url: fd.get('photo_url'),
+      photo_fit: fd.get('photo_fit'),
+    }
+    if (editingArtistId) {
+      await supabase.from('artists').update(payload).eq('id', editingArtistId)
+      setEditingArtistId(null)
+    } else {
+      await supabase.from('artists').insert(payload)
+    }
     setShowMsg(true)
     setTimeout(() => setShowMsg(false), 2000)
     fetchData()
-    e.currentTarget.reset()
+    form.reset()
+    setSubmitting(false)
   }
 
   async function deleteShow(id: string) {
@@ -291,6 +336,15 @@ export default function AdminDashboard() {
   async function deleteArtist(id: string) {
     await supabase.from('artists').delete().eq('id', id)
     fetchData()
+  }
+
+  function startEditArtist(artist: Artist) {
+    setEditingArtistId(artist.id)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  function cancelEditArtist() {
+    setEditingArtistId(null)
   }
 
   if (!isLoggedIn) {
@@ -333,28 +387,90 @@ export default function AdminDashboard() {
 
       {/* Spettacoli */}
       <div className="bg-slate-800 p-6 rounded-lg border-l-4 border-pink-600">
-        <SectionTitle>📅 Aggiungi Spettacolo</SectionTitle>
-        <form onSubmit={addShow} className="space-y-3">
-          <InputField name="title" placeholder="Titolo" required />
-          <InputField name="date" placeholder="Data" type="datetime-local" required />
-          <TextAreaField name="description" placeholder="Descrizione" />
-          <button type="submit" className="w-full bg-pink-600 text-white px-4 py-2 rounded font-bold hover:bg-pink-700 transition">
-            Aggiungi
-          </button>
-        </form>
+        <SectionTitle>{editingShowId ? '✏️ Modifica Spettacolo' : '📅 Aggiungi Spettacolo'}</SectionTitle>
+        {editingShowId && (
+          <div className="mb-4 bg-yellow-600 text-white px-4 py-2 rounded flex items-center justify-between">
+            <span className="text-sm font-bold">✏️ Modalità modifica</span>
+            <button onClick={cancelEditShow} className="text-sm underline hover:no-underline">Annulla</button>
+          </div>
+        )}
+        {(() => {
+          const editingShow = shows.find(s => s.id === editingShowId)
+          return (
+            <form key={editingShowId ?? 'new'} onSubmit={addShow} className="space-y-3">
+              <InputField name="title" placeholder="Titolo" required defaultValue={editingShow?.title} />
+              <InputField
+                name="date"
+                placeholder="Data"
+                type="datetime-local"
+                required
+                defaultValue={editingShow ? toDatetimeLocal(editingShow.date) : undefined}
+              />
+              <TextAreaField name="description" placeholder="Descrizione" defaultValue={editingShow?.description} />
+              <button
+                type="submit"
+                disabled={submitting}
+                className={`w-full text-white px-4 py-2 rounded font-bold transition disabled:opacity-50 disabled:cursor-not-allowed ${
+                  editingShowId ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-pink-600 hover:bg-pink-700'
+                }`}
+              >
+                {submitting ? 'Salvataggio…' : editingShowId ? 'Aggiorna' : 'Aggiungi'}
+              </button>
+            </form>
+          )
+        })()}
       </div>
 
       {/* Artisti */}
       <div className="bg-slate-800 p-6 rounded-lg border-l-4 border-pink-600">
-        <SectionTitle>👤 Aggiungi Artista</SectionTitle>
-        <form onSubmit={addArtist} className="space-y-3">
-          <InputField name="name" placeholder="Nome" required />
-          <InputField name="role" placeholder="Ruolo" required />
-          <TextAreaField name="bio" placeholder="Bio" />
-          <button type="submit" className="w-full bg-pink-600 text-white px-4 py-2 rounded font-bold hover:bg-pink-700 transition">
-            Aggiungi
-          </button>
-        </form>
+        <SectionTitle>{editingArtistId ? '✏️ Modifica Artista' : '👤 Aggiungi Artista'}</SectionTitle>
+        {editingArtistId && (
+          <div className="mb-4 bg-yellow-600 text-white px-4 py-2 rounded flex items-center justify-between">
+            <span className="text-sm font-bold">✏️ Modalità modifica</span>
+            <button onClick={cancelEditArtist} className="text-sm underline hover:no-underline">Annulla</button>
+          </div>
+        )}
+        {(() => {
+          const editingArtist = artists.find(a => a.id === editingArtistId)
+          return (
+            <form key={editingArtistId ?? 'new'} onSubmit={addArtist} className="space-y-3">
+              <InputField name="name" placeholder="Nome" required defaultValue={editingArtist?.name} />
+              <InputField name="role" placeholder="Ruolo" required defaultValue={editingArtist?.role} />
+              <InputField name="photo_url" placeholder="URL Foto" defaultValue={editingArtist?.photo_url} />
+              <div>
+                <label className="block text-sm text-gray-300 mb-1">Foto</label>
+                <div className="flex gap-4 text-white text-sm">
+                  <label className="flex items-center gap-1">
+                    <input
+                      type="radio"
+                      name="photo_fit"
+                      value="contain"
+                      defaultChecked={(editingArtist?.photo_fit ?? 'contain') === 'contain'}
+                    /> Adatta (mostra tutta l&apos;immagine)
+                  </label>
+                  <label className="flex items-center gap-1">
+                    <input
+                      type="radio"
+                      name="photo_fit"
+                      value="cover"
+                      defaultChecked={editingArtist?.photo_fit === 'cover'}
+                    /> Originale (riempie e ritaglia)
+                  </label>
+                </div>
+              </div>
+              <TextAreaField name="bio" placeholder="Bio" defaultValue={editingArtist?.bio} />
+              <button
+                type="submit"
+                disabled={submitting}
+                className={`w-full text-white px-4 py-2 rounded font-bold transition disabled:opacity-50 disabled:cursor-not-allowed ${
+                  editingArtistId ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-pink-600 hover:bg-pink-700'
+                }`}
+              >
+                {submitting ? 'Salvataggio…' : editingArtistId ? 'Aggiorna' : 'Aggiungi'}
+              </button>
+            </form>
+          )
+        })()}
       </div>
 
       {/* Tabelle */}
@@ -373,7 +489,15 @@ export default function AdminDashboard() {
               <tr key={show.id} className="border-b border-slate-700">
                 <td className="p-2">{show.title}</td>
                 <td className="p-2">{new Date(show.date).toLocaleString('it-IT')}</td>
-                <td className="p-2"><DeleteBtn onClick={() => deleteShow(show.id)} /></td>
+                <td className="p-2 flex gap-2">
+                  <button
+                    onClick={() => startEditShow(show)}
+                    className="bg-yellow-600 text-white px-3 py-1 rounded text-xs hover:bg-yellow-700 transition"
+                  >
+                    ✏️ Modifica
+                  </button>
+                  <DeleteBtn onClick={() => deleteShow(show.id)} />
+                </td>
               </tr>
             ))}
           </tbody>
@@ -395,7 +519,15 @@ export default function AdminDashboard() {
               <tr key={artist.id} className="border-b border-slate-700">
                 <td className="p-2">{artist.name}</td>
                 <td className="p-2">{artist.role}</td>
-                <td className="p-2"><DeleteBtn onClick={() => deleteArtist(artist.id)} /></td>
+                <td className="p-2 flex gap-2">
+                  <button
+                    onClick={() => startEditArtist(artist)}
+                    className="bg-yellow-600 text-white px-3 py-1 rounded text-xs hover:bg-yellow-700 transition"
+                  >
+                    ✏️ Modifica
+                  </button>
+                  <DeleteBtn onClick={() => deleteArtist(artist.id)} />
+                </td>
               </tr>
             ))}
           </tbody>
@@ -403,6 +535,9 @@ export default function AdminDashboard() {
       </div>
 
       {/* Nuove sezioni */}
+      <ProductionsPanel />
+      <ShowGalleryManager shows={shows} />
+      <ArtistGalleryManager artists={artists} />
       <PrintSection />
       <ArtistLinkSection artists={artists} />
       <ScreenContentManager />
